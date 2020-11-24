@@ -1,13 +1,12 @@
 import 'package:firestorecrud/core/constants/decoration.dart';
-import 'package:firestorecrud/core/models/product_model.dart';
-import 'package:firestorecrud/core/viewmodels/crud_model.dart';
+import 'package:firestorecrud/core/models/product.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 
 class ModifyProductScreen extends StatefulWidget {
   final Product product;
-  ModifyProductScreen({this.product});
+  final provider;
+  ModifyProductScreen({this.product, this.provider});
 
   @override
   _ModifyProductScreenState createState() => _ModifyProductScreenState();
@@ -22,7 +21,6 @@ class _ModifyProductScreenState extends State<ModifyProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final productProvider = Provider.of<CrudModel>(context);
     productType = widget.product.img[0].toUpperCase() + widget.product.img.substring(1);
 
     return Scaffold(
@@ -39,7 +37,7 @@ class _ModifyProductScreenState extends State<ModifyProductScreen> {
               children: <Widget>[
                 TextFormField(
                   initialValue: widget.product.name,
-                  decoration: textFieldDecoration,
+                  decoration: productFieldDecoration,
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'Please enter Product Title';
@@ -53,7 +51,7 @@ class _ModifyProductScreenState extends State<ModifyProductScreen> {
                 TextFormField(
                   initialValue: widget.product.price,
                   keyboardType: TextInputType.numberWithOptions(),
-                  decoration: textFieldDecoration.copyWith(hintText: 'Price'),
+                  decoration: productFieldDecoration.copyWith(hintText: 'Price'),
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'Please enter Product Title';
@@ -84,7 +82,7 @@ class _ModifyProductScreenState extends State<ModifyProductScreen> {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
                       print('Data is valid');
-                      await productProvider.updateProduct(Product(name: name,price: price,img: productType.toLowerCase()),widget.product.id);
+                      await widget.provider.updateProduct(Product(name: name,price: price,img: productType.toLowerCase()),widget.product.id);
                       Navigator.pop(context) ;
                     }
                   },

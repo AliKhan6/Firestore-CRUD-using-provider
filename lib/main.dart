@@ -1,6 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firestorecrud/core/viewmodels/crud_model.dart';
+import 'package:firestorecrud/core/emun/auth_status.dart';
+import 'package:firestorecrud/core/services/firebase_auth_helper.dart';
+import 'package:firestorecrud/core/viewmodels/more_data_view_model.dart';
+import 'package:firestorecrud/core/viewmodels/produts_view_model.dart';
+import 'package:firestorecrud/core/viewmodels/profile_view_model.dart';
 import 'package:firestorecrud/router.dart';
+import 'package:firestorecrud/ui/screens/home_screen.dart';
+import 'package:firestorecrud/ui/screens/signin_screen.dart';
+import 'package:firestorecrud/ui/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'locator.dart';
@@ -18,16 +25,43 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => locator<CrudModel>()),
+          // locator for firebase authentication stuff
+          ChangeNotifierProvider(create: (_) => locator<FirebaseAuthHelper>(),),
+          // locator for profile data communication
+          ChangeNotifierProvider(create: (_) => locator<ProfileViewModel>(),),
+          // locator for working on products data
+          ChangeNotifierProvider(create: (_) => locator<ProductsViewModel>()),
+          // more data view model
+          ChangeNotifierProvider(create: (_) => MoreDataViewModel()),
         ],
-      child:  MaterialApp(
+        child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Provider work',
-          theme: ThemeData(),
           onGenerateRoute: Router.generateRoute,
-          initialRoute: '/',
-      ),
+          theme: ThemeData(
+            primarySwatch: Colors.red,
+          ),
+          home: Consumer(
+            ///
+            /// Use all these for selection of correct flow of app
+            ///
+              builder: (context, FirebaseAuthHelper auth, _,){
+                switch (auth.status){
+                  case AuthStatus.Uninitialized:
+                    // this is used for navigation to sign up screen
+                    return SignUpScreen();
+                  case AuthStatus.Authenticating:
+                    return SignInScreen();
+                  case AuthStatus.Unauthenticated:
+                    return SignInScreen();
+                  case AuthStatus.Authenticated:
+                    return HomeScreen();
+                }
+                return SignInScreen();
+              }
+          ),
+        )
     );
+
   }
 }
 

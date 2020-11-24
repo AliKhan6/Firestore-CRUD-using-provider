@@ -1,10 +1,13 @@
 import 'package:firestorecrud/core/constants/decoration.dart';
-import 'package:firestorecrud/core/models/product_model.dart';
-import 'package:firestorecrud/core/viewmodels/crud_model.dart';
+import 'package:firestorecrud/core/models/product.dart';
+import 'package:firestorecrud/core/viewmodels/produts_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+
 class AddProductScreen extends StatefulWidget {
+  final provider;
+  AddProductScreen({this.provider});
 
   @override
   _AddProductScreenState createState() => _AddProductScreenState();
@@ -21,7 +24,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var productProvider = Provider.of<CrudModel>(context);
+    final productProvider = Provider.of<ProductsViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +39,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             child: Column(
               children: <Widget>[
                 TextFormField(
-                  decoration: textFieldDecoration,
+                  decoration: productFieldDecoration,
                   validator: (value){
                     if(value.isEmpty){
                       return 'Product title is necessary';
@@ -49,7 +52,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 SizedBox(height: 16,),
                 TextFormField(
                   keyboardType: TextInputType.numberWithOptions(),
-                  decoration: textFieldDecoration.copyWith(hintText: 'Price'),
+                  decoration: productFieldDecoration.copyWith(hintText: 'Price'),
                   validator: (value){
                     if(value.isEmpty){
                       return 'Price is necessary';

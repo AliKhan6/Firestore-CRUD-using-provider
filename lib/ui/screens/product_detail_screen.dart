@@ -1,17 +1,16 @@
-import 'package:firestorecrud/core/models/product_model.dart';
-import 'package:firestorecrud/core/viewmodels/crud_model.dart';
+import 'package:firestorecrud/core/models/product.dart';
+import 'package:firestorecrud/core/viewmodels/produts_view_model.dart';
 import 'package:firestorecrud/ui/screens/modify_product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final Product product;
-  ProductDetailScreen({@required this.product});
+  final provider;
+  ProductDetailScreen({@required this.product,this.provider});
 
   @override
   Widget build(BuildContext context) {
-    final productProvider = Provider.of<CrudModel>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Product Details'),
@@ -19,8 +18,9 @@ class ProductDetailScreen extends StatelessWidget {
           IconButton(
             iconSize: 35,
               icon: Icon(Icons.delete_forever),
-              onPressed: () async{
-                await productProvider.removeProduct(product.id);
+              onPressed: () {
+              provider.removeProduct(product.id);
+              print("Product id: ${product.id}");
                 Navigator.pop(context);
               }
           ),
@@ -28,7 +28,7 @@ class ProductDetailScreen extends StatelessWidget {
             iconSize: 35,
               icon: Icon(Icons.edit),
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyProductScreen(product: product)));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ModifyProductScreen(product: product,provider: provider,)));
               }
           )
         ],
