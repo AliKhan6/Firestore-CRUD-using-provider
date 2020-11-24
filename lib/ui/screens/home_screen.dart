@@ -1,24 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firestorecrud/core/models/product_model.dart';
-import 'package:firestorecrud/core/viewmodels/crud_model.dart';
-import 'package:firestorecrud/ui/screens/product_detail_screen.dart';
+import 'package:firestorecrud/core/models/product.dart';
+import 'package:firestorecrud/core/viewmodels/produts_view_model.dart';
+import 'package:firestorecrud/ui/custom_widgets/bottom_navigation_bar.dart';
+import 'package:firestorecrud/ui/custom_widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'add_product_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   List<Product> products;
 
   @override
   Widget build(BuildContext context) {
-    final productProvider = Provider.of<CrudModel>(context);
+    final productProvider = Provider.of<ProductsViewModel>(context);
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-          onPressed: () => Navigator.pushNamed(context,'add_products'),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddProductScreen(
+            provider: productProvider,
+          ))),
         child: Icon(Icons.add),
       ),
       appBar: AppBar(
-        title: Center(child: Text('Home Screen')),
+        title: Text('Home Screen'),
+        actions: <Widget>[
+          GestureDetector(
+              onTap: (){},
+              child: Padding(
+                padding: EdgeInsets.only(right: 12.0,top: 0.0),
+                child: Icon(Icons.more_vert),
+              )),
+        ],
       ),
       body: Container(
         child: StreamBuilder(
@@ -29,7 +47,7 @@ class HomeScreen extends StatelessWidget {
                 return ListView.builder(
                     itemCount: products.length,
                     itemBuilder: (context, index){
-                      return ProductCard(productDetail: products[index]);
+                      return ProductCard(productDetail: products[index],provider: productProvider,);
                     }
                 );
               }else{
@@ -40,63 +58,9 @@ class HomeScreen extends StatelessWidget {
         }
         ),
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(0)
     );
   }
 }
 
-class ProductCard extends StatelessWidget {
-  final Product productDetail;
-  ProductCard({this.productDetail});
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(
-          product: productDetail,
-        )));
-      },
-      child: Padding(
-          padding: EdgeInsets.all(10),
-        child: Card(
-          elevation: 5,
-          child: Container(
-            height: MediaQuery.of(context).size.height * 0.45,
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: Column(
-              children: <Widget>[
-                Hero(
-                    tag: productDetail.id,
-                    child: Image.asset('images/${productDetail.img}.jpg',height: MediaQuery.of(context).size.height * 0.35,),
-                ),
-                Padding(
-                    padding: EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        productDetail.name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 22,
-                            fontStyle: FontStyle.italic),
-                      ),
-                      Text(
-                        '${productDetail.price} \$',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 22,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.orangeAccent),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
